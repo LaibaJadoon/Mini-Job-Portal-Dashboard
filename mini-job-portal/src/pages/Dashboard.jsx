@@ -1,19 +1,41 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../app/slices/authSlice";
+import Header from "../components/Header";
+import Home from "../components/Home"; 
+import AboutUs from "../components/AboutUs";
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  // Get auth state from Redux
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    const isAuthenticated = localStorage.getItem('isAuthenticated');
-    if (isAuthenticated !== 'true') {
-      navigate('/login');
+    if (!isAuthenticated) {
+      navigate("/");
     }
-  }, [navigate]);
+  }, [isAuthenticated, navigate]);
 
-  return (
-    <div className="text-2xl font-bold text-center mt-10 text-green-800">
-    Welcome to the Dashboard!
+  const handleLogout = () => {
+    dispatch(logout());
+    // Do NOT remove 'jobPortalUser'
+    localStorage.setItem("isAuthenticated", "false");
+    navigate("/");
+  };
+
+    return (
+    <div className="relative">
+      <Header /> {/* Fixed header */}
+      <main className="pt-[80px]"> {/* Padding to avoid overlap under fixed header */}
+        <section id="home">
+          <Home />
+        </section>
+        <AboutUs /> 
+      </main>
     </div>
   );
+
 }
