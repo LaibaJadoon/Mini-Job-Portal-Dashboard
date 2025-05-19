@@ -5,6 +5,9 @@ import { logout } from "../app/slices/authSlice";
 import Header from "../components/Header";
 import Home from "../components/Home"; 
 import AboutUs from "../components/AboutUs";
+import HowToApply from "../components/HowTpApply";
+import Categories from "../components/Categories";
+import ContactUs from "../components/ContactUs";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -34,6 +37,9 @@ export default function Dashboard() {
           <Home />
         </section>
         <AboutUs /> 
+        <HowToApply/>
+        <Categories/>
+        <ContactUs/>
       </main>
     </div>
   );

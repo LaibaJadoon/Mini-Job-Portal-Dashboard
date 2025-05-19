@@ -38,7 +38,13 @@ export default function Header() {
         {" "}
         {/* Logo */}
         <div className="flex items-center space-x-2">
-          <img src={logo} alt="Logo" className="h-14 w-14 object-contain" />
+          <img src={logo} alt="Logo" className="h-14 w-14 object-contain"
+          onClick={() =>
+              document
+                .getElementById("home")
+                ?.scrollIntoView({ behavior: "smooth" })
+            } />
+          
           <span className="text-xl font-bold"></span>
         </div>
         {/* Navigation */}
