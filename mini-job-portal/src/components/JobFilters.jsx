@@ -1,38 +1,52 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setFilters } from "../app/slices/jobsSlice";
 
 export default function JobFilters() {
-  const [filters, setFilters] = useState({
+  const dispatch = useDispatch();
+  const reduxFilters = useSelector((state) => state.jobs.filters);
+
+  const [filters, setFiltersLocal] = useState({
     companies: [],
     categories: [],
-    limits: [],
     types: [],
     locations: [],
   });
 
   const handleCheckboxChange = (section, value) => {
-    setFilters((prev) => {
-      const currentValues = prev[section];
-      return {
-        ...prev,
-        [section]: currentValues.includes(value)
-          ? currentValues.filter((item) => item !== value)
-          : [...currentValues, value],
-      };
+    setFiltersLocal((prev) => {
+      let newValues;
+
+      if (value === "All") {
+        newValues = ["All"];
+      } else {
+        // Remove "All" if it's selected
+        newValues = prev[section].filter((v) => v !== "All");
+        // Toggle selection
+        newValues = newValues.includes(value)
+          ? newValues.filter((item) => item !== value)
+          : [...newValues, value];
+      }
+
+      const updated = { ...prev, [section]: newValues };
+      dispatch(setFilters(updated));
+      return updated;
     });
   };
 
   const handleClearAll = () => {
-    setFilters({
+    const cleared = {
       companies: [],
       categories: [],
-      limits: [],
       types: [],
       locations: [],
-    });
+    };
+    setFiltersLocal(cleared);
+    dispatch(setFilters(cleared));
   };
 
   const renderCheckbox = (section, label) => (
-    <label className="flex items-center mb-2">
+    <label key={label} className="flex items-center mb-2">
       <input
         type="checkbox"
         className="w-5 h-5 mr-2"
@@ -43,8 +57,12 @@ export default function JobFilters() {
     </label>
   );
 
+  useEffect(() => {
+    setFiltersLocal(reduxFilters);
+  }, [reduxFilters]);
+
   return (
-    <div className="ml-6 p-4 border border-gray-200 rounded-lg bg-[#f5f5f5] ">
+    <div className="ml-6 p-4 border border-gray-200 rounded-lg bg-[#f5f5f5]">
       {/* Heading & Clear All */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold">Filter Jobs</h3>
@@ -61,7 +79,7 @@ export default function JobFilters() {
       {/* Company Filter */}
       <div className="mb-4">
         <h4 className="font-medium mb-2">Company Name</h4>
-        {["Google", "Amazon", "Meta", "Upwork" ,"Others"].map((company) =>
+        {["A.Team", "IspeedToLead", "Volatus Health", "OnTheGoSystems", "Khan Academy", "All"].map((company) =>
           renderCheckbox("companies", company)
         )}
       </div>
@@ -71,18 +89,8 @@ export default function JobFilters() {
       {/* Category Filter */}
       <div className="mb-4">
         <h4 className="font-medium mb-2">Category</h4>
-        {["Design", "Development", "Marketing", "Freelance" , "Others"].map((cat) =>
+        {["Software Development", "Customer Service", "Design", "Marketing", "Sales / Business", "All"].map((cat) =>
           renderCheckbox("categories", cat)
-        )}
-      </div>
-
-      <hr className="my-3 border-gray-300" />
-
-      {/* Limit Filter */}
-      <div className="mb-4">
-        <h4 className="font-medium mb-2">Limit</h4>
-        {["Top 10", "Top 15", "Top 20", "Top 25" , "All"].map((limit) =>
-          renderCheckbox("limits", limit)
         )}
       </div>
 
@@ -91,9 +99,9 @@ export default function JobFilters() {
       {/* Job Type Filter */}
       <div className="mb-4">
         <h4 className="font-medium mb-2">Job Type</h4>
-        {["Full-time", "Part-time", "Contract", "Internship" ,"Others" ].map((type) =>
-          renderCheckbox("types", type)
-        )}
+        {["full_time", "part_time", "contract", "internship", "freelance", "All"].map((type) =>
+  renderCheckbox("types", type)
+)}
       </div>
 
       <hr className="my-3 border-gray-300" />
@@ -101,7 +109,7 @@ export default function JobFilters() {
       {/* Location Filter */}
       <div>
         <h4 className="font-medium mb-2">Location</h4>
-        {["Remote", "On-site", "Hybrid", "All"].map((loc) =>
+        {["Worldwide", "UK", "Europe", "Americas", "All"].map((loc) =>
           renderCheckbox("locations", loc)
         )}
       </div>

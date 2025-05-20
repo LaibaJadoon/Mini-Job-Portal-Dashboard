@@ -2,16 +2,18 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../app/slices/authSlice";
+import { setSearchTerm } from "../app/slices/jobsSlice"; // updated action name
 import { FaUserCircle } from "react-icons/fa";
 import logo from "../assets/logo.png";
 
-export default function JobsPageHeader() {
+export default function SearchBar() {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const [searchText, setSearchText] = useState("");
 
   const handleLogout = () => {
     dispatch(logout());
@@ -19,7 +21,17 @@ export default function JobsPageHeader() {
     navigate("/");
   };
 
-  // Close dropdown when clicking outside
+const handleSearchChange = (e) => {
+  const value = e.target.value;
+  setSearchText(value);
+  dispatch(setSearchTerm(value)); // live filtering on every keystroke
+};
+
+  const handleSearchSubmit = (e) => {
+  e.preventDefault();
+  dispatch(setSearchTerm(searchText)); // keeping for explicit search button press
+};
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -44,16 +56,24 @@ export default function JobsPageHeader() {
         </div>
 
         {/* Search bar */}
-        <div className="flex w-full max-w-xl mx-6">
-         <input
-  type="text"
-  placeholder="Search for jobs..."
-  className="flex-grow p-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-[#064420] text-[#064420]"
-/>
-          <button className="bg-[#064420] text-white px-4 rounded-r-lg">
-            Search
-          </button>
-        </div>
+       <form
+  onSubmit={handleSearchSubmit}
+  className="flex w-full max-w-xl mx-6"
+>
+  <input
+    type="text"
+    placeholder="Search for jobs..."
+    value={searchText}
+    onChange={handleSearchChange}
+    className="flex-grow p-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-[#064420] text-[#064420]"
+  />
+  <button
+    type="submit"
+    className="bg-[#064420] text-white px-4 rounded-r-lg"
+  >
+    Search
+  </button>
+</form>
 
         {/* Profile */}
         <div className="relative" ref={dropdownRef}>

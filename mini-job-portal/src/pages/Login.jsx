@@ -9,7 +9,8 @@ export default function Login() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  
+// Reads isAuthenticated value from Redux store
   const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
 
   useEffect(() => {

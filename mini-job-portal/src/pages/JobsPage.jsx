@@ -1,27 +1,37 @@
-import React, { useState } from "react";
-import Header from "../components/Header";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchJobs } from "../app/slices/jobsSlice";
 import SearchBar from "../components/SearchBar";
 import JobFilters from "../components/JobFilters";
 import JobCard from "../components/JobCard";
 
 export default function JobsPage() {
+  const dispatch = useDispatch();
+  const { filteredJobs, status, error } = useSelector((state) => state.jobs);
+
   const [currentPage, setCurrentPage] = useState(1);
-
-
-  const allJobs = Array.from({ length: 40 }); // Simulate 40 jobs for demo
   const jobsPerPage = 15;
-  const totalPages = Math.ceil(allJobs.length / jobsPerPage);
 
+  useEffect(() => {
+    dispatch(fetchJobs());
+  }, [dispatch]);
+
+  // Reset page to 1 whenever the filtered jobs change (for proper pagination)
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filteredJobs]);
+
+  const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
   const indexOfLastJob = currentPage * jobsPerPage;
   const indexOfFirstJob = indexOfLastJob - jobsPerPage;
-  const currentJobs = allJobs.slice(indexOfFirstJob, indexOfLastJob);
+  const currentJobs = filteredJobs.slice(indexOfFirstJob, indexOfLastJob);
 
   const handleNext = () => {
-    if (currentPage < totalPages) setCurrentPage(prev => prev + 1);
+    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
   };
 
   const handlePrevious = () => {
-    if (currentPage > 1) setCurrentPage(prev => prev - 1);
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
   };
 
   return (
@@ -30,51 +40,81 @@ export default function JobsPage() {
         <SearchBar />
 
         <div className="flex flex-col md:flex-row gap-6 mt-12">
-          {/* Left Sidebar - Filters */}
           <div className="w-full md:w-1/4">
             <JobFilters />
           </div>
 
-          {/* Right - Job Cards */}
           <div className="w-full md:w-3/4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {currentJobs.map((_, index) => (
-                <JobCard key={index} />
-              ))}
-            </div>
+            {status === "loading" && <p>Loading jobs...</p>}
+            {status === "failed" && <p>Error: {error}</p>}
+            {status === "succeeded" && (
+              <>
+                {/* Dynamic results message */}
+                <p className="mb-4 font-semibold text-[#064420]">
+                  {filteredJobs.length === 0
+                    ? "No results found"
+                    : `${filteredJobs.length} job${filteredJobs.length > 1 ? "s" : ""} found`}
+                </p>
 
-            {/* Pagination */}
-            <div className="mt-8 flex justify-center items-center gap-2">
-              <button
-                onClick={handlePrevious}
-                className="px-4 py-2 bg-[#064420] text-white rounded-md disabled:opacity-50"
-                disabled={currentPage === 1}
-              >
-                Previous
-              </button>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {currentJobs.map((job) => (
+                    <JobCard key={job.id} job={job} />
+                  ))}
+                </div>
 
-              {Array.from({ length: totalPages }).map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentPage(index + 1)}
-                  className={`px-4 py-2 rounded-md ${
-                    currentPage === index + 1
-                      ? "bg-[#064420] text-white"
-                      : "bg-gray-200 text-[#064420]"
-                  }`}
-                >
-                  {index + 1}
-                </button>
-              ))}
+                {/* Pagination */}
+                <div className="mt-8 flex justify-center items-center gap-2">
+                  <button
+                    onClick={() => setCurrentPage(1)}
+                    disabled={currentPage === 1}
+                    className="px-3 py-1 text-sm bg-[#064420] text-white rounded disabled:opacity-50"
+                  >
+                    First
+                  </button>
+                  <button
+                    onClick={handlePrevious}
+                    disabled={currentPage === 1}
+                    className="px-3 py-1 text-sm bg-[#064420] text-white rounded disabled:opacity-50"
+                  >
+                    Prev
+                  </button>
 
-              <button
-                onClick={handleNext}
-                className="px-4 py-2 bg-[#064420] text-white rounded-md disabled:opacity-50"
-                disabled={currentPage === totalPages}
-              >
-                Next
-              </button>
-            </div>
+                  {Array.from({ length: 3 }, (_, i) => {
+                    const page = currentPage - 1 + i;
+                    if (page < 1 || page > totalPages) return null;
+                    const isCurrent = currentPage === page;
+                    return (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`px-3 py-1 text-sm rounded border ${
+                          isCurrent
+                            ? "bg-[#064420] text-white border-[#064420]"
+                            : "border-[#064420] text-[#064420] bg-white"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    );
+                  })}
+
+                  <button
+                    onClick={handleNext}
+                    disabled={currentPage === totalPages}
+                    className="px-3 py-1 text-sm bg-[#064420] text-white rounded disabled:opacity-50"
+                  >
+                    Next
+                  </button>
+                  <button
+                    onClick={() => setCurrentPage(totalPages)}
+                    disabled={currentPage === totalPages}
+                    className="px-3 py-1 text-sm bg-[#064420] text-white rounded disabled:opacity-50"
+                  >
+                    Last
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
