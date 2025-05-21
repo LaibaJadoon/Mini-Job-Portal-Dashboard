@@ -6,6 +6,15 @@ export const fetchJobs = createAsyncThunk("jobs/fetchJobs", async () => {
   const response = await axios.get("https://remotive.com/api/remote-jobs");
   return response.data.jobs;
 });
+let savedSelectedJob = null;
+try {
+  const jobFromStorage = localStorage.getItem("selectedJob");
+  if (jobFromStorage) {
+    savedSelectedJob = JSON.parse(jobFromStorage);
+  }
+} catch (error) {
+  console.error("Error parsing selectedJob from localStorage:", error);
+}
 
 const jobsSlice = createSlice({
   name: "jobs",
@@ -15,23 +24,36 @@ const jobsSlice = createSlice({
     searchTerm: "",
     status: "idle",
     error: null,
+     selectedJob: savedSelectedJob,
     filters: {
       companies: [],
       categories: [],
       types: [],
       locations: [],
     },
+   
   },
   reducers: {
     setSearchTerm: (state, action) => {
       state.searchTerm = action.payload;
       applyCombinedFilters(state);
     },
+
     setFilters: (state, action) => {
       state.filters = action.payload;
       applyCombinedFilters(state);
     },
+
+    setSelectedJob: (state, action) => {
+  state.selectedJob = action.payload;
+  localStorage.setItem("selectedJob", JSON.stringify(action.payload)); // persist it
+},
+
+  clearSelectedJob: (state) => {
+    state.selectedJob = null; 
   },
+},
+
   extraReducers: (builder) => {
     builder
       .addCase(fetchJobs.pending, (state) => {
@@ -84,5 +106,7 @@ const applyCombinedFilters = (state) => {
   });
 };
 
-export const { setSearchTerm, setFilters } = jobsSlice.actions;
+export const { setSearchTerm, setFilters, setSelectedJob, clearSelectedJob } = jobsSlice.actions;
+
 export default jobsSlice.reducer;
+

@@ -2,9 +2,17 @@ import React, { useState } from "react";
 import { FaRegBookmark, FaBookmark } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import companyLogo from "../assets/logo.png";
+import { setSelectedJob } from "../app/slices/jobsSlice"; 
+import { useDispatch } from "react-redux";
+import { useEffect } from "react";
 
 export default function JobCard({ job }) {
   const { company_name, company_logo, title, job_type, description } = job;
+  const dispatch = useDispatch();
+
+useEffect(() => {
+  window.scrollTo(0, 0);
+}, []);
 
   const [bookmarked, setBookmarked] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -26,9 +34,10 @@ export default function JobCard({ job }) {
     showToast("Application Submitted!");
   };
 
-  const handleViewDetails = () => {
-    navigate("/job-details");
-  };
+const handleViewDetails = () => {
+  dispatch(setSelectedJob(job)); 
+  navigate("/job-details");
+};
 
   return (
     <div className="border rounded-lg p-4 shadow hover:shadow-md transition duration-300 relative flex flex-col h-full">
