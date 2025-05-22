@@ -5,7 +5,7 @@ import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import JobsPage from './pages/JobsPage';
 import JobDetails from "./pages/JobDetails"; 
-
+import BookmarksPage from "./pages/BookmarksPage";
 function App() {
   return (
     <Routes>
@@ -15,7 +15,7 @@ function App() {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/jobs" element={<JobsPage />} />
       <Route path="/job-details" element={<JobDetails />} /> 
-
+<Route path="/bookmarks" element={<BookmarksPage />} />
     </Routes>
   );
 }

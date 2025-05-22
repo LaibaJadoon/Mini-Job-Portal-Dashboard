@@ -79,7 +79,7 @@ export default function JobFilters() {
       {/* Company Filter */}
       <div className="mb-4">
         <h4 className="font-medium mb-2">Company Name</h4>
-        {["A.Team", "IspeedToLead", "Volatus Health", "OnTheGoSystems", "Khan Academy", "All"].map((company) =>
+        {["A.Team", "IspeedToLead", "Livestorm", "OnTheGoSystems", "Oscar Health", "All"].map((company) =>
           renderCheckbox("companies", company)
         )}
       </div>
