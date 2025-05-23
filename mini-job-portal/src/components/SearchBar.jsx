@@ -2,11 +2,19 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../app/slices/authSlice";
-import { setSearchTerm } from "../app/slices/jobsSlice"; // updated action name
+import { setSearchTerm } from "../app/slices/jobsSlice";
+import {
+  setBookmarkSearchQuery,
+  applySearchAndFiltersToBookmarks,
+} from "../app/slices/bookmarksSlice";
+import {
+  setAppliedJobsSearchQuery,
+  applySearchAndFiltersToAppliedJobs,
+} from "../app/slices/appliedJobsSlice";
 import { FaUserCircle } from "react-icons/fa";
 import logo from "../assets/logo.png";
 
-export default function SearchBar() {
+export default function SearchBar({ isBookmarksPage = false, isAppliedJobsPage = false }) {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -21,16 +29,34 @@ export default function SearchBar() {
     navigate("/");
   };
 
-const handleSearchChange = (e) => {
-  const value = e.target.value;
-  setSearchText(value);
-  dispatch(setSearchTerm(value)); // live filtering on every keystroke
-};
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchText(value);
+
+    if (isBookmarksPage) {
+      dispatch(setBookmarkSearchQuery(value));
+      dispatch(applySearchAndFiltersToBookmarks());
+    } else if (isAppliedJobsPage) {
+      dispatch(setAppliedJobsSearchQuery(value));
+      dispatch(applySearchAndFiltersToAppliedJobs());
+    } else {
+      dispatch(setSearchTerm(value));
+    }
+  };
 
   const handleSearchSubmit = (e) => {
-  e.preventDefault();
-  dispatch(setSearchTerm(searchText)); // keeping for explicit search button press
-};
+    e.preventDefault();
+
+    if (isBookmarksPage) {
+      dispatch(setBookmarkSearchQuery(searchText));
+      dispatch(applySearchAndFiltersToBookmarks());
+    } else if (isAppliedJobsPage) {
+      dispatch(setAppliedJobsSearchQuery(searchText));
+      dispatch(applySearchAndFiltersToAppliedJobs());
+    } else {
+      dispatch(setSearchTerm(searchText));
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -56,24 +82,18 @@ const handleSearchChange = (e) => {
         </div>
 
         {/* Search bar */}
-       <form
-  onSubmit={handleSearchSubmit}
-  className="flex w-full max-w-xl mx-6"
->
-  <input
-    type="text"
-    placeholder="Search for jobs..."
-    value={searchText}
-    onChange={handleSearchChange}
-    className="flex-grow p-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-[#064420] text-[#064420]"
-  />
-  <button
-    type="submit"
-    className="bg-[#064420] text-white px-4 rounded-r-lg"
-  >
-    Search
-  </button>
-</form>
+        <form onSubmit={handleSearchSubmit} className="flex w-full max-w-xl mx-6">
+          <input
+            type="text"
+            placeholder="Search for jobs..."
+            value={searchText}
+            onChange={handleSearchChange}
+            className="flex-grow p-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-[#064420] text-[#064420]"
+          />
+          <button type="submit" className="bg-[#064420] text-white px-4 rounded-r-lg">
+            Search
+          </button>
+        </form>
 
         {/* Profile */}
         <div className="relative" ref={dropdownRef}>

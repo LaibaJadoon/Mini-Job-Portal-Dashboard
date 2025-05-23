@@ -10,9 +10,10 @@ const bookmarksSlice = createSlice({
     filteredBookmarks: savedBookmarks,
     searchQuery: "",
     filters: {
-      location: "",
-      jobType: "",
-      category: "",
+      companies: [],
+      categories: [],
+      types: [],
+      locations: [],
     },
   },
   reducers: {
@@ -35,14 +36,15 @@ const bookmarksSlice = createSlice({
     },
 
     setBookmarkFilters: (state, action) => {
-      state.filters = { ...state.filters, ...action.payload };
+      state.filters = { ...action.payload };
     },
 
     clearBookmarkFilters: (state) => {
       state.filters = {
-        location: "",
-        jobType: "",
-        category: "",
+        companies: [],
+        categories: [],
+        types: [],
+        locations: [],
       };
     },
 
@@ -51,19 +53,40 @@ const bookmarksSlice = createSlice({
 
       const filtered = items.filter((job) => {
         const matchesSearch =
-          job.title.toLowerCase().includes(searchQuery) ||
-          job.description.toLowerCase().includes(searchQuery);
+  job.title.toLowerCase().includes(state.searchQuery.toLowerCase()) ||
+  job.category.toLowerCase().includes(state.searchQuery.toLowerCase());
 
-        const matchesLocation =
-          !filters.location || job.candidate_required_location.toLowerCase().includes(filters.location.toLowerCase());
+        const matchesCompanies =
+          filters.companies.length === 0 ||
+          filters.companies.includes("All") ||
+          filters.companies.includes(job.company_name);
 
-        const matchesJobType =
-          !filters.jobType || job.job_type.toLowerCase() === filters.jobType.toLowerCase();
+        const matchesCategories =
+          filters.categories.length === 0 ||
+          filters.categories.includes("All") ||
+          filters.categories.includes(job.category);
 
-        const matchesCategory =
-          !filters.category || job.category.toLowerCase() === filters.category.toLowerCase();
+        const matchesTypes =
+          filters.types.length === 0 ||
+          filters.types.includes("All") ||
+          filters.types.includes(job.job_type.toLowerCase());
 
-        return matchesSearch && matchesLocation && matchesJobType && matchesCategory;
+        const matchesLocations =
+          filters.locations.length === 0 ||
+          filters.locations.includes("All") ||
+          filters.locations.some((loc) =>
+            job.candidate_required_location
+              .toLowerCase()
+              .includes(loc.toLowerCase())
+          );
+
+        return (
+          matchesSearch &&
+          matchesCompanies &&
+          matchesCategories &&
+          matchesTypes &&
+          matchesLocations
+        );
       });
 
       state.filteredBookmarks = filtered;

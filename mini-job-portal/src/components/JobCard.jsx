@@ -5,6 +5,7 @@ import companyLogo from "../assets/logo.png";
 import { useDispatch, useSelector } from "react-redux";
 import { setSelectedJob } from "../app/slices/jobsSlice";
 import { toggleBookmark } from "../app/slices/bookmarksSlice";
+import { applyToJob } from "../app/slices/appliedJobsSlice";
 
 export default function JobCard({ job }) {
   const { company_name, company_logo, title, job_type, description } = job;
@@ -19,8 +20,10 @@ export default function JobCard({ job }) {
   const bookmarkedJobs = useSelector((state) => state.bookmarks.items);
   const isBookmarked = bookmarkedJobs.some((item) => item.id === job.id);
 
+  const appliedJobs = useSelector((state) => state.appliedJobs.items);
+  const isApplied = appliedJobs.some((item) => item.id === job.id);
+
   const [toastMessage, setToastMessage] = useState("");
-  const [applied, setApplied] = useState(false);
 
   const showToast = (message) => {
     setToastMessage(message);
@@ -33,8 +36,10 @@ export default function JobCard({ job }) {
   };
 
   const handleApply = () => {
-    setApplied(true);
-    showToast("Application Submitted!");
+    if (!isApplied) {
+      dispatch(applyToJob(job));
+      showToast("Application Submitted!");
+    }
   };
 
   const handleViewDetails = () => {
@@ -85,11 +90,11 @@ export default function JobCard({ job }) {
         <button
           onClick={handleApply}
           className={`px-4 py-2 rounded ${
-            applied ? "bg-gray-400 cursor-not-allowed" : "bg-[#064420] text-white"
+            isApplied ? "bg-gray-400 cursor-not-allowed" : "bg-[#064420] text-white"
           }`}
-          disabled={applied}
+          disabled={isApplied}
         >
-          {applied ? "Applied" : "Apply Now"}
+          {isApplied ? "Applied" : "Apply Now"}
         </button>
 
         <button

@@ -4,6 +4,7 @@ import SearchBar from "../components/SearchBar";
 import JobFilters from "../components/JobFilters";
 import JobCard from "../components/JobCard";
 import { applySearchAndFiltersToBookmarks } from "../app/slices/bookmarksSlice";
+import Pagination from "../components/Pagination";
 
 export default function BookmarksPage() {
   const dispatch = useDispatch();
@@ -23,14 +24,6 @@ export default function BookmarksPage() {
   const indexOfLastJob = currentPage * jobsPerPage;
   const indexOfFirstJob = indexOfLastJob - jobsPerPage;
   const currentJobs = filteredBookmarks.slice(indexOfFirstJob, indexOfLastJob);
-
-  const handleNext = () => {
-    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
-  };
-
-  const handlePrevious = () => {
-    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
-  };
 
   return (
     <div className="bg-white min-h-screen text-[#064420]">
@@ -53,57 +46,12 @@ export default function BookmarksPage() {
                 <JobCard key={job.id} job={job} />
               ))}
             </div>
-
-            <div className="mt-8 flex justify-center items-center gap-2">
-              <button
-                onClick={() => setCurrentPage(1)}
-                disabled={currentPage === 1}
-                className="px-3 py-1 text-sm bg-[#064420] text-white rounded disabled:opacity-50"
-              >
-                First
-              </button>
-              <button
-                onClick={handlePrevious}
-                disabled={currentPage === 1}
-                className="px-3 py-1 text-sm bg-[#064420] text-white rounded disabled:opacity-50"
-              >
-                Prev
-              </button>
-
-              {Array.from({ length: 3 }, (_, i) => {
-                const page = currentPage - 1 + i;
-                if (page < 1 || page > totalPages) return null;
-                const isCurrent = currentPage === page;
-                return (
-                  <button
-                    key={page}
-                    onClick={() => setCurrentPage(page)}
-                    className={`px-3 py-1 text-sm rounded border ${
-                      isCurrent
-                        ? "bg-[#064420] text-white border-[#064420]"
-                        : "border-[#064420] text-[#064420] bg-white"
-                    }`}
-                  >
-                    {page}
-                  </button>
-                );
-              })}
-
-              <button
-                onClick={handleNext}
-                disabled={currentPage === totalPages}
-                className="px-3 py-1 text-sm bg-[#064420] text-white rounded disabled:opacity-50"
-              >
-                Next
-              </button>
-              <button
-                onClick={() => setCurrentPage(totalPages)}
-                disabled={currentPage === totalPages}
-                className="px-3 py-1 text-sm bg-[#064420] text-white rounded disabled:opacity-50"
-              >
-                Last
-              </button>
-            </div>
+{/* //Pagination */}
+           <Pagination
+  currentPage={currentPage}
+  totalPages={totalPages}
+  onPageChange={setCurrentPage}
+/>
           </div>
         </div>
       </div>

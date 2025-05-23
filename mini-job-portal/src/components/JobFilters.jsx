@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setFilters } from "../app/slices/jobsSlice";
+import {
+  setFilters as setJobFilters
+} from "../app/slices/jobsSlice";
+import {
+  setBookmarkFilters,
+  clearBookmarkFilters,
+  applySearchAndFiltersToBookmarks
+} from "../app/slices/bookmarksSlice";
 
-export default function JobFilters() {
+export default function JobFilters({ isBookmarksPage = false }) {
   const dispatch = useDispatch();
-  const reduxFilters = useSelector((state) => state.jobs.filters);
+  const reduxFilters = useSelector((state) =>
+    isBookmarksPage ? state.bookmarks.filters : state.jobs.filters
+  );
 
   const [filters, setFiltersLocal] = useState({
     companies: [],
@@ -20,16 +29,21 @@ export default function JobFilters() {
       if (value === "All") {
         newValues = ["All"];
       } else {
-        // Remove "All" if it's selected
         newValues = prev[section].filter((v) => v !== "All");
-        // Toggle selection
         newValues = newValues.includes(value)
           ? newValues.filter((item) => item !== value)
           : [...newValues, value];
       }
 
       const updated = { ...prev, [section]: newValues };
-      dispatch(setFilters(updated));
+
+      if (isBookmarksPage) {
+        dispatch(setBookmarkFilters(updated));
+        dispatch(applySearchAndFiltersToBookmarks());
+      } else {
+        dispatch(setJobFilters(updated));
+      }
+
       return updated;
     });
   };
@@ -42,7 +56,13 @@ export default function JobFilters() {
       locations: [],
     };
     setFiltersLocal(cleared);
-    dispatch(setFilters(cleared));
+
+    if (isBookmarksPage) {
+      dispatch(clearBookmarkFilters());
+      dispatch(applySearchAndFiltersToBookmarks());
+    } else {
+      dispatch(setJobFilters(cleared));
+    }
   };
 
   const renderCheckbox = (section, label) => (
@@ -63,7 +83,6 @@ export default function JobFilters() {
 
   return (
     <div className="ml-6 p-4 border border-gray-200 rounded-lg bg-[#f5f5f5]">
-      {/* Heading & Clear All */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold">Filter Jobs</h3>
         <button
@@ -76,7 +95,6 @@ export default function JobFilters() {
 
       <hr className="my-3 border-gray-300" />
 
-      {/* Company Filter */}
       <div className="mb-4">
         <h4 className="font-medium mb-2">Company Name</h4>
         {["A.Team", "IspeedToLead", "Livestorm", "OnTheGoSystems", "Oscar Health", "All"].map((company) =>
@@ -86,7 +104,6 @@ export default function JobFilters() {
 
       <hr className="my-3 border-gray-300" />
 
-      {/* Category Filter */}
       <div className="mb-4">
         <h4 className="font-medium mb-2">Category</h4>
         {["Software Development", "Customer Service", "Design", "Marketing", "Sales / Business", "All"].map((cat) =>
@@ -96,17 +113,15 @@ export default function JobFilters() {
 
       <hr className="my-3 border-gray-300" />
 
-      {/* Job Type Filter */}
       <div className="mb-4">
         <h4 className="font-medium mb-2">Job Type</h4>
         {["full_time", "part_time", "contract", "internship", "freelance", "All"].map((type) =>
-  renderCheckbox("types", type)
-)}
+          renderCheckbox("types", type)
+        )}
       </div>
 
       <hr className="my-3 border-gray-300" />
 
-      {/* Location Filter */}
       <div>
         <h4 className="font-medium mb-2">Location</h4>
         {["Worldwide", "UK", "Europe", "Americas", "All"].map((loc) =>

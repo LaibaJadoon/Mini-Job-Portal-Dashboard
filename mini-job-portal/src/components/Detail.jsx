@@ -4,6 +4,7 @@ import defaultLogo from "../assets/logo.png";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleBookmark } from "../app/slices/bookmarksSlice";
+import { applyToJob } from "../app/slices/appliedJobsSlice";
 
 export default function Detail({ job }) {
   useEffect(() => {
@@ -29,7 +30,9 @@ export default function Detail({ job }) {
   const bookmarkedJobs = useSelector((state) => state.bookmarks.items);
   const isBookmarked = bookmarkedJobs.some((item) => item.id === id);
 
-  const [applied, setApplied] = useState(false);
+  const appliedJobs = useSelector((state) => state.appliedJobs.items);
+  const isApplied = appliedJobs.some((item) => item.id === id);
+
   const [toastMessage, setToastMessage] = useState("");
 
   const showToast = (message) => {
@@ -38,8 +41,10 @@ export default function Detail({ job }) {
   };
 
   const handleApply = () => {
-    setApplied(true);
-    showToast("Application Submitted!");
+    if (!isApplied) {
+      dispatch(applyToJob(job));
+      showToast("Application Submitted!");
+    }
   };
 
   const handleBookmark = () => {
@@ -75,14 +80,14 @@ export default function Detail({ job }) {
         <div className="flex flex-col items-end">
           <button
             onClick={handleApply}
-            disabled={applied}
+            disabled={isApplied}
             className={`px-5 py-2 rounded text-sm font-semibold transition ${
-              applied
+              isApplied
                 ? "bg-gray-400 cursor-not-allowed text-white"
                 : "bg-[#064420] text-white hover:bg-[#053d1c]"
             }`}
           >
-            {applied ? "Applied" : "Apply Now"}
+            {isApplied ? "Applied" : "Apply Now"}
           </button>
           <button
             onClick={handleBookmark}

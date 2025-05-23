@@ -6,6 +6,8 @@ import Dashboard from './pages/Dashboard';
 import JobsPage from './pages/JobsPage';
 import JobDetails from "./pages/JobDetails"; 
 import BookmarksPage from "./pages/BookmarksPage";
+import AppliedJobs from "./pages/AppliedJobs";
+
 function App() {
   return (
     <Routes>
@@ -16,6 +18,8 @@ function App() {
       <Route path="/jobs" element={<JobsPage />} />
       <Route path="/job-details" element={<JobDetails />} /> 
 <Route path="/bookmarks" element={<BookmarksPage />} />
+<Route path="/applied-jobs" element={<AppliedJobs />} />
+
     </Routes>
   );
 }
