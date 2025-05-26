@@ -72,7 +72,7 @@ export default function SearchBar({ isBookmarksPage = false, isAppliedJobsPage =
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-[#011c0d] text-[#F5F5DC] py-4 shadow-md">
-      <div className="max-w-screen-xl mx-auto px-6 flex justify-between items-center">
+      <div className="max-w-screen-xl mx-auto px-4 flex justify-between items-center">
         {/* Logo */}
         <div
           className="flex items-center space-x-2 cursor-pointer"
@@ -81,16 +81,22 @@ export default function SearchBar({ isBookmarksPage = false, isAppliedJobsPage =
           <img src={logo} alt="Logo" className="h-14 w-14 object-contain" />
         </div>
 
-        {/* Search bar */}
-        <form onSubmit={handleSearchSubmit} className="flex w-full max-w-xl mx-6">
+        {/* Search bar - width reduced for responsiveness */}
+        <form
+          onSubmit={handleSearchSubmit}
+          className="flex w-64 sm:w-80 md:w-96 mx-4"
+        >
           <input
             type="text"
-            placeholder="Search for jobs..."
+            placeholder="Search jobs..."
             value={searchText}
             onChange={handleSearchChange}
-            className="flex-grow p-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-[#064420] text-[#064420]"
+            className="flex-grow p-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-[#064420] text-[#064420] text-sm"
           />
-          <button type="submit" className="bg-[#064420] text-white px-4 rounded-r-lg">
+          <button
+            type="submit"
+            className="bg-[#064420] text-white px-3 rounded-r-lg text-sm"
+          >
             Search
           </button>
         </form>
@@ -102,7 +108,7 @@ export default function SearchBar({ isBookmarksPage = false, isAppliedJobsPage =
             onClick={() => setDropdownOpen(!dropdownOpen)}
           >
             <FaUserCircle className="text-3xl" />
-            <span>{user?.name}</span>
+            <span className="text-sm sm:text-base">{user?.name}</span>
           </div>
           {dropdownOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-white text-[#064420] rounded shadow-lg z-50">

@@ -22,7 +22,7 @@ export default function ContactUs() {
 
       <div className="grid md:grid-cols-2 gap-12 items-start">
         {/* Contact Form */}
-        <form className="space-y-6 md:ml-48">
+        <form className="space-y-6 w-full max-w-xl mx-auto md:mx-0">
           <div>
             <label className="block mb-1 text-sm font-medium">Your Name</label>
             <input
@@ -58,7 +58,7 @@ export default function ContactUs() {
         </form>
 
         {/* Contact Info */}
-        <div className="flex flex-col space-y-6">
+        <div className="flex flex-col space-y-6 max-w-xl mx-auto md:mx-0">
           <div className="flex items-start gap-4">
             <FaEnvelope size={20} className="mt-1 text-[#064420]" />
             <div>

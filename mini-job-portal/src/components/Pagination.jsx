@@ -18,18 +18,18 @@ export default function Pagination({
   );
 
   return (
-    <div className="mt-8 flex justify-center items-center gap-2">
+    <div className="mt-8 flex flex-wrap justify-center items-center gap-1 sm:gap-2">
       <button
         onClick={handleFirst}
         disabled={currentPage === 1}
-        className="px-3 py-1 text-sm bg-[#064420] text-white rounded disabled:opacity-50"
+        className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-[#064420] text-white rounded disabled:opacity-50"
       >
         First
       </button>
       <button
         onClick={handlePrev}
         disabled={currentPage === 1}
-        className="px-3 py-1 text-sm bg-[#064420] text-white rounded disabled:opacity-50"
+        className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-[#064420] text-white rounded disabled:opacity-50"
       >
         Prev
       </button>
@@ -38,7 +38,7 @@ export default function Pagination({
         <button
           key={page}
           onClick={() => onPageChange(page)}
-          className={`px-3 py-1 text-sm rounded border ${
+          className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded border ${
             currentPage === page
               ? "bg-[#064420] text-white border-[#064420]"
               : "border-[#064420] text-[#064420] bg-white"
@@ -51,14 +51,14 @@ export default function Pagination({
       <button
         onClick={handleNext}
         disabled={currentPage === totalPages}
-        className="px-3 py-1 text-sm bg-[#064420] text-white rounded disabled:opacity-50"
+        className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-[#064420] text-white rounded disabled:opacity-50"
       >
         Next
       </button>
       <button
         onClick={handleLast}
         disabled={currentPage === totalPages}
-        className="px-3 py-1 text-sm bg-[#064420] text-white rounded disabled:opacity-50"
+        className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-[#064420] text-white rounded disabled:opacity-50"
       >
         Last
       </button>

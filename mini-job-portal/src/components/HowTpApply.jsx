@@ -17,7 +17,7 @@ export default function HowToApply() {
       </p>
 
       {/* Steps */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-10 justify-items-center">
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 justify-items-center">
         {/* Step 1 */}
         <div className="flex flex-col items-center bg-[#F5F5DC] p-6 rounded-2xl shadow-lg w-full max-w-[250px]">
           <FaUserPlus className="text-4xl text-[#064420] mb-4" />

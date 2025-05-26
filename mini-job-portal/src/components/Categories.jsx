@@ -34,16 +34,17 @@ export default function Categories() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-        {categories.map((category, index) => (
-          <div
-            key={index}
-            className="bg-[#F5F5DC] text-[#011c0d] rounded-2xl p-6 shadow-md text-center hover:shadow-lg transition duration-300"
-          >
-            <div className="text-[#064420] mb-4 flex justify-center">{category.icon}</div>
-            <h3 className="font-semibold text-lg mb-1">{category.title}</h3>
-            <p className="text-sm text-gray-800">{category.jobs}</p>
-          </div>
-        ))}
+       {categories.map((category, index) => (
+  <div key={index} className="flex justify-center">
+    <div
+      className="bg-[#F5F5DC] text-[#011c0d] rounded-2xl p-6 shadow-md text-center hover:shadow-lg transition duration-300 w-full max-w-[300px]"
+    >
+      <div className="text-[#064420] mb-4 flex justify-center">{category.icon}</div>
+      <h3 className="font-semibold text-lg mb-1">{category.title}</h3>
+      <p className="text-sm text-gray-800">{category.jobs}</p>
+    </div>
+  </div>
+))}
       </div>
 
       <div className="text-center">
