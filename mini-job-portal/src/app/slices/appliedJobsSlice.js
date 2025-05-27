@@ -78,7 +78,7 @@ const appliedJobsSlice = createSlice({
 
 export const {
   applyToJob,
-  setAppliedJobsSearchQuery, // ✅ renamed and exported correctly
+  setAppliedJobsSearchQuery, 
   setAppliedFilters,
   clearAppliedFilters,
   applySearchAndFiltersToAppliedJobs,
