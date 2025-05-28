@@ -1,22 +1,48 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-// Load from localStorage
-const savedBookmarks = JSON.parse(localStorage.getItem("bookmarkedJobs")) || [];
+const normalizeEmail = (email) => email?.trim().toLowerCase();
+
+const getLocalStorageKey = (email) => `bookmarkedJobs_${normalizeEmail(email)}`;
+
+const loadFromLocalStorage = (email) => {
+  try {
+    if (!email) return [];
+    const data = localStorage.getItem(getLocalStorageKey(email));
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
+};
+
+const saveToLocalStorage = (email, data) => {
+  if (!email) return;
+  localStorage.setItem(getLocalStorageKey(email), JSON.stringify(data));
+};
+
+const initialState = {
+  items: [],
+  filteredBookmarks: [],
+  searchQuery: "",
+  filters: {
+    companies: [],
+    categories: [],
+    types: [],
+    locations: [],
+  },
+  currentUserEmail: null,
+};
 
 const bookmarksSlice = createSlice({
   name: "bookmarks",
-  initialState: {
-    items: savedBookmarks,
-    filteredBookmarks: savedBookmarks,
-    searchQuery: "",
-    filters: {
-      companies: [],
-      categories: [],
-      types: [],
-      locations: [],
-    },
-  },
+  initialState,
   reducers: {
+    setCurrentUserEmail: (state, action) => {
+      const email = normalizeEmail(action.payload);
+      state.currentUserEmail = email;
+      // Load bookmarks from localStorage for this user
+      state.items = loadFromLocalStorage(email);
+      state.filteredBookmarks = state.items;
+    },
     toggleBookmark: (state, action) => {
       const job = action.payload;
       const exists = state.items.find((item) => item.id === job.id);
@@ -27,18 +53,14 @@ const bookmarksSlice = createSlice({
         state.items.push(job);
       }
 
-      // Update localStorage
-      localStorage.setItem("bookmarkedJobs", JSON.stringify(state.items));
+      saveToLocalStorage(state.currentUserEmail, state.items);
     },
-
     setBookmarkSearchQuery: (state, action) => {
       state.searchQuery = action.payload.toLowerCase();
     },
-
     setBookmarkFilters: (state, action) => {
       state.filters = { ...action.payload };
     },
-
     clearBookmarkFilters: (state) => {
       state.filters = {
         companies: [],
@@ -47,14 +69,13 @@ const bookmarksSlice = createSlice({
         locations: [],
       };
     },
-
     applySearchAndFiltersToBookmarks: (state) => {
       const { items, searchQuery, filters } = state;
 
       const filtered = items.filter((job) => {
         const matchesSearch =
-  job.title.toLowerCase().includes(state.searchQuery.toLowerCase()) ||
-  job.category.toLowerCase().includes(state.searchQuery.toLowerCase());
+          job.title.toLowerCase().includes(searchQuery) ||
+          job.category.toLowerCase().includes(searchQuery);
 
         const matchesCompanies =
           filters.companies.length === 0 ||
@@ -91,6 +112,19 @@ const bookmarksSlice = createSlice({
 
       state.filteredBookmarks = filtered;
     },
+    resetBookmarksState: (state) => {
+      // Clear all bookmarks state on logout or user switch
+      state.items = [];
+      state.filteredBookmarks = [];
+      state.searchQuery = "";
+      state.filters = {
+        companies: [],
+        categories: [],
+        types: [],
+        locations: [],
+      };
+      state.currentUserEmail = null;
+    },
   },
 });
 
@@ -100,6 +134,8 @@ export const {
   setBookmarkFilters,
   clearBookmarkFilters,
   applySearchAndFiltersToBookmarks,
+  setCurrentUserEmail,
+  resetBookmarksState,
 } = bookmarksSlice.actions;
 
 export default bookmarksSlice.reducer;

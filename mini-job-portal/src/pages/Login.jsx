@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../app/slices/authSlice';
+import { setCurrentUserEmail as setBookmarksUserEmail } from '../app/slices/bookmarksSlice';
+import { setCurrentUserEmail as setAppliedJobsUserEmail } from '../app/slices/appliedJobsSlice';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -9,8 +11,6 @@ export default function Login() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
-// Reads isAuthenticated value from Redux store
   const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
 
   useEffect(() => {
@@ -19,27 +19,37 @@ export default function Login() {
     }
   }, [isAuthenticated, navigate]);
 
+  const getUsers = () => {
+    const usersData = localStorage.getItem('jobPortalUsers');
+    return usersData ? JSON.parse(usersData) : [];
+  };
+
   const handleLogin = (e) => {
     e.preventDefault();
-    const savedUser = JSON.parse(localStorage.getItem('jobPortalUser'));
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const users = getUsers();
+
+    const savedUser = users.find(user => user.email === normalizedEmail);
 
     if (!savedUser) {
       setError("You don't have an account, create one first.");
       return;
     }
 
-    if (email === savedUser.email && password === savedUser.password) {
+    if (password === savedUser.password) {
       setError('');
       dispatch(login(savedUser));
+      dispatch(setBookmarksUserEmail(normalizedEmail));     // set user email for bookmarks
+      dispatch(setAppliedJobsUserEmail(normalizedEmail));    // set user email for applied jobs
+
+      localStorage.setItem('currentUserEmail', normalizedEmail);
       localStorage.setItem('isAuthenticated', 'true');
-      navigate('/dashboard'); // Optional because useEffect will also redirect
+      navigate('/dashboard'); 
     } else {
       setError('Invalid credentials. Please try again.');
     }
   };
-
-
-
 
   return (
     <div className="min-h-screen bg-[#011c0d] flex items-center justify-center">
@@ -89,5 +99,4 @@ export default function Login() {
       </div>
     </div>
   );
-
 }

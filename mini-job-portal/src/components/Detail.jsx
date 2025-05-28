@@ -23,7 +23,6 @@ export default function Detail({ job }) {
     publication_date,
     tags,
     description,
-    company_logo,
     id,
   } = job;
 
@@ -66,13 +65,15 @@ export default function Detail({ job }) {
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4 gap-4">
           <div className="flex gap-4">
             <img
-              src={company_logo || defaultLogo}
+              src={defaultLogo}
               alt="Company Logo"
-              onError={(e) => (e.target.src = defaultLogo)}
               className="w-16 h-16 object-cover rounded-full border border-gray-300 shadow-sm"
             />
+
             <div className="flex flex-col">
-              <p className="text-lg font-semibold text-gray-700">{company_name}</p>
+              <p className="text-lg font-semibold text-gray-700">
+                {company_name}
+              </p>
               <h1 className="text-3xl font-extrabold text-[#064420] leading-tight">
                 {title}
               </h1>
@@ -96,7 +97,11 @@ export default function Detail({ job }) {
               onClick={handleBookmark}
               className="mt-3 mx-10 text-[#064420] hover:text-[#032c15]"
             >
-              {isBookmarked ? <FaBookmark size={18} /> : <FaRegBookmark size={18} />}
+              {isBookmarked ? (
+                <FaBookmark size={18} />
+              ) : (
+                <FaRegBookmark size={18} />
+              )}
             </button>
           </div>
         </div>
@@ -104,16 +109,19 @@ export default function Detail({ job }) {
         {/* Capsules */}
         <div className="mt-2 ml-16">
           <div className="flex flex-wrap gap-2 mb-3">
-            {[category, job_type, candidate_required_location, new Date(publication_date).toLocaleDateString()].map(
-              (item, idx) => (
-                <span
-                  key={idx}
-                  className="px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm bg-[#064420] text-white font-medium rounded-full shadow-sm whitespace-nowrap"
-                >
-                  {item}
-                </span>
-              )
-            )}
+            {[
+              category,
+              job_type,
+              candidate_required_location,
+              new Date(publication_date).toLocaleDateString(),
+            ].map((item, idx) => (
+              <span
+                key={idx}
+                className="px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm bg-[#064420] text-white font-medium rounded-full shadow-sm whitespace-nowrap"
+              >
+                {item}
+              </span>
+            ))}
           </div>
 
           {/* Tags */}
@@ -145,7 +153,11 @@ export default function Detail({ job }) {
               onClick={handleBookmark}
               className="text-[#064420] hover:text-[#032c15]"
             >
-              {isBookmarked ? <FaBookmark size={20} /> : <FaRegBookmark size={20} />}
+              {isBookmarked ? (
+                <FaBookmark size={20} />
+              ) : (
+                <FaRegBookmark size={20} />
+              )}
             </button>
           </div>
         </div>

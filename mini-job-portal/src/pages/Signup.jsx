@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../app/slices/authSlice';
+import { setCurrentUserEmail as setBookmarksUserEmail } from '../app/slices/bookmarksSlice';
+import { setCurrentUserEmail as setAppliedJobsUserEmail } from '../app/slices/appliedJobsSlice';
 
 export default function Signup() {
   const [name, setName] = useState('');
@@ -10,7 +12,6 @@ export default function Signup() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const dispatch = useDispatch();
-// Reads isAuthenticated value from Redux store
   const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
 
   useEffect(() => {
@@ -19,24 +20,53 @@ export default function Signup() {
     }
   }, [isAuthenticated, navigate]);
 
+  // Helper to get users array from localStorage
+  const getUsers = () => {
+    const usersData = localStorage.getItem('jobPortalUsers');
+    return usersData ? JSON.parse(usersData) : [];
+  };
+
+  // Helper to save users array to localStorage
+  const saveUsers = (users) => {
+    localStorage.setItem('jobPortalUsers', JSON.stringify(users));
+  };
+
   const handleSignup = (e) => {
     e.preventDefault();
 
-    const existingUser = JSON.parse(localStorage.getItem('jobPortalUser'));
+    const normalizedEmail = email.trim().toLowerCase();
 
-    if (existingUser && existingUser.email === email) {
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=~`[\]{}|\\:;"'<>,.?/]).{8,}$/;
+
+    if (!passwordRegex.test(password)) {
+      setError('Password must be at least 8 characters long and include 1 uppercase letter, 1 number, and 1 special character.');
+      return;
+    }
+
+    const users = getUsers();
+
+    // Check if email already exists
+    const existingUser = users.find(user => user.email === normalizedEmail);
+    if (existingUser) {
       setError('Account already exists. Please log in instead.');
       return;
     }
 
-    const newUser = { name, email, password };
-    localStorage.setItem('jobPortalUser', JSON.stringify(newUser));
+    const newUser = { name, email: normalizedEmail, password };
+    users.push(newUser);
+    saveUsers(users);
+
+    // Save current logged in user email separately
+    localStorage.setItem('currentUserEmail', normalizedEmail);
     localStorage.setItem('isAuthenticated', 'true');
     setError('');
-    dispatch(login(newUser));
-    navigate('/dashboard'); // Optional because useEffect will also redirect
-  };
 
+    dispatch(login(newUser));
+    dispatch(setBookmarksUserEmail(normalizedEmail));   // set user email for bookmarks
+    dispatch(setAppliedJobsUserEmail(normalizedEmail));  // set user email for applied jobs
+
+    navigate('/dashboard'); 
+  };
 
   return (
     <div className="min-h-screen bg-[#011c0d] flex items-center justify-center">

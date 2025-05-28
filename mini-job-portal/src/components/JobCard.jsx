@@ -8,7 +8,7 @@ import { toggleBookmark } from "../app/slices/bookmarksSlice";
 import { applyToJob } from "../app/slices/appliedJobsSlice";
 
 export default function JobCard({ job }) {
-  const { company_name, company_logo, title, job_type, description } = job;
+  const { company_name,  title, job_type, description } = job;
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -58,14 +58,10 @@ export default function JobCard({ job }) {
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-start gap-3">
           <img
-            src={company_logo || companyLogo}
-            alt={`${company_name} logo`}
-            className="w-10 h-10 object-contain rounded"
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = companyLogo;
-            }}
-          />
+  src={companyLogo}
+  alt="Company logo"
+  className="w-10 h-10 object-contain rounded"
+/>
           <div>
             <p className="font-semibold text-sm">{company_name}</p>
             <p className="text-xs text-gray-500">

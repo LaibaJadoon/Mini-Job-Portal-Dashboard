@@ -73,13 +73,16 @@ export default function SearchBar({ isBookmarksPage = false, isAppliedJobsPage =
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-[#011c0d] text-[#F5F5DC] py-4 shadow-md">
       <div className="max-w-screen-xl mx-auto px-4 flex justify-between items-center">
-        {/* Logo */}
-        <div
-          className="flex items-center space-x-2 cursor-pointer"
-          onClick={() => navigate("/dashboard")}
-        >
-          <img src={logo} alt="Logo" className="h-14 w-14 object-contain" />
-        </div>
+       {/* Logo with "Back to Home" text */}
+<div
+  className="flex items-center space-x-2 cursor-pointer"
+  onClick={() => navigate("/dashboard")}
+>
+  <img src={logo} alt="Logo" className="h-14 w-14 object-contain" />
+  <span className="text-sm sm:text-base text-[#F5F5DC] hover:underline">
+    Back to Home
+  </span>
+</div>
 
         {/* Search bar - width reduced for responsiveness */}
         <form

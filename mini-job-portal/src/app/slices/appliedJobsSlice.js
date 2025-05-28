@@ -1,21 +1,27 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const loadFromLocalStorage = () => {
+const getLocalStorageKey = (email) => `appliedJobs_${email}`;
+
+const loadFromLocalStorage = (email) => {
   try {
-    const data = localStorage.getItem("appliedJobs");
+    if (!email) return [];
+    const data = localStorage.getItem(getLocalStorageKey(email));
     return data ? JSON.parse(data) : [];
   } catch {
     return [];
   }
 };
 
-const saveToLocalStorage = (data) => {
-  localStorage.setItem("appliedJobs", JSON.stringify(data));
+const saveToLocalStorage = (email, data) => {
+  if (!email) return;
+  localStorage.setItem(getLocalStorageKey(email), JSON.stringify(data));
 };
 
+const normalizeEmail = (email) => email?.trim().toLowerCase();
+
 const initialState = {
-  items: loadFromLocalStorage(),
-  filteredAppliedJobs: loadFromLocalStorage(),
+  items: [],
+  filteredAppliedJobs: [],
   searchQuery: "",
   filters: {
     companies: [],
@@ -23,6 +29,7 @@ const initialState = {
     types: [],
     locations: [],
   },
+  currentUserEmail: null,
 };
 
 const matchesFilters = (job, filters) => {
@@ -41,18 +48,24 @@ const appliedJobsSlice = createSlice({
   name: "appliedJobs",
   initialState,
   reducers: {
+    setCurrentUserEmail: (state, action) => {
+      const email = normalizeEmail(action.payload);
+      state.currentUserEmail = email;
+      state.items = loadFromLocalStorage(email);
+      state.filteredAppliedJobs = state.items;
+    },
     applyToJob: (state, action) => {
       const exists = state.items.find((job) => job.id === action.payload.id);
       if (!exists) {
         state.items.push(action.payload);
-        saveToLocalStorage(state.items);
+        saveToLocalStorage(state.currentUserEmail, state.items);
       }
     },
     setAppliedJobsSearchQuery: (state, action) => {
-      state.searchQuery = action.payload;
+      state.searchQuery = action.payload.toLowerCase();
     },
     setAppliedFilters: (state, action) => {
-      state.filters = action.payload;
+      state.filters = { ...action.payload };
     },
     clearAppliedFilters: (state) => {
       state.filters = {
@@ -63,10 +76,12 @@ const appliedJobsSlice = createSlice({
       };
     },
     applySearchAndFiltersToAppliedJobs: (state) => {
+      const searchQuery = state.searchQuery.toLowerCase();
+
       state.filteredAppliedJobs = state.items.filter((job) => {
         const matchesSearch =
-  job.title.toLowerCase().includes(state.searchQuery.toLowerCase()) ||
-  job.category.toLowerCase().includes(state.searchQuery.toLowerCase());
+          job.title.toLowerCase().includes(searchQuery) ||
+          job.category.toLowerCase().includes(searchQuery);
 
         const matches = matchesFilters(job, state.filters);
 
@@ -78,10 +93,11 @@ const appliedJobsSlice = createSlice({
 
 export const {
   applyToJob,
-  setAppliedJobsSearchQuery, 
+  setAppliedJobsSearchQuery,
   setAppliedFilters,
   clearAppliedFilters,
   applySearchAndFiltersToAppliedJobs,
+  setCurrentUserEmail,
 } = appliedJobsSlice.actions;
 
 export default appliedJobsSlice.reducer;
