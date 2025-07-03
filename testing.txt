@@ -1,0 +1,18 @@
+# Git Operations
+
+## Pull Request Creation Errors
+- **Error Message**: "Error creating pull request: Unknown error: Client error '422 Unprocessable Entity' for url 'https://api.github.com/repos/LaibaJadoon/Mini-Job-Portal-Dashboard/pulls'"
+- **Possible Causes**: This error may occur due to existing pull requests or branch protection rules.
+
+## Successful Branch Push
+The branch `update-report-file` was successfully pushed to the remote repository despite the pull request error. Users can manually create the pull request by visiting the link: [Create Pull Request for update-report-file](https://github.com/LaibaJadoon/Mini-Job-Portal-Dashboard/pull/new/update-report-file).
+
+## Command Execution Observations
+The command `git push -f origin update-report-file` was executed successfully, completing with exit code 0 and indicating that everything is up-to-date. The working directory was `Mini-Job-Portal-Dashboard`, and the Python interpreter used was the default version.
+
+## Branch Information
+Current branches and remote repository state:
+```
+$(git remote -v)
+$(git branch)
+```
